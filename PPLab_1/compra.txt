@@ -1,0 +1,7 @@
+FACTURA DE COMPRA
+
+Cantidad   Producto                           Marca                    Subtotal   
+---------------------------------------------------------------------------------
+   1       Transportadora para gatos          Sherpa                   $32.99
+---------------------------------------------------------------------------------
+El total de la compra es de: $32.99

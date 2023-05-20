@@ -1,0 +1,51 @@
+ID,NOMBRE,MARCA,PRECIO,CARACTERISTICAS
+1,Alimento para perros,Pedigree,$12.99,Sabor delicioso~Nutrición equilibrada~Contiene vitaminas y minerales
+2,Alimento para gatos,Purina ONE,$9.99,Alta calidad~Proteínas de primera~Promueve un pelaje saludable
+3,Juguete para perros,Kong,$15.50,Duradero~Ideal para masticadores agresivos
+4,Arenero para gatos,Arm & Hammer,$19.99,Control de olores~Fácil de limpiar
+5,Correa para perros,Flexi,$24.99,Extensible~Mango ergonómico~Cinta reflectante
+6,Cama para perros,Aspen Pet,$29.99,Material suave~Lavable a máquina~Cómoda y acogedora
+7,Juguete para gatos,Frolicat,$19.99,Juguete interactivo~Movimientos impredecibles~Mantiene a los gatos activos
+8,Acuario,Tetra,$39.99,10 galones~Filtro incorporado~Ideal para peces tropicales
+9,Alimento para perros,Pro Plan,$18.50,Ingredientes naturales~Alta digestibilidad~Para todas las etapas de vida
+10,Correa para perros,Halti,$14.99,Control de tirones~Ajustable~Cómoda para el perro y el dueño
+11,Alimento para gatos,Science Diet,$16.99,Fórmula equilibrada~Control de peso~Promueve la salud urinaria
+12,Cama para gatos,PetFusion,$34.99,Diseño elegante~Material duradero~Fácil de limpiar
+13,Juguete para perros,Nylabone,$9.99,Resistente a la masticación~Ayuda a la higiene dental
+14,Arenero para gatos,Purina Tidy Cats,$12.99,Sistema todo en uno~Bandeja removible~Fácil de mantener
+15,Alimento para perros,Blue Buffalo,$21.99,Ingredientes naturales~Sin granos~Para razas pequeñas
+16,Transportadora para gatos,Sherpa,$32.99,Aprobada por aerolíneas~Cómoda y segura~Ventilación adecuada
+17,Juguete para gatos,Cat Dancer,$5.99,Juguete interactivo~Atrae la atención de los gatos~Horas de diversión
+18,Alimento para perros,Iams,$14.50,Control de peso~Proteínas de calidad~Sabor delicioso
+19,Arenero para gatos,Litter Genie,$19.99,Fácil eliminación de desechos~Control de olores~Práctico y conveniente
+20,Correa para perros,Ruffwear,$27.99,Resistente al agua~Ideal para actividades al aire libre~Cómoda para el perro y el dueño
+21,Cama para perros,Kuranda,$69.99,Elevada~Duradera~Fácil de limpiar
+22,Alimento para gatos,Wellness,$22.50,Ingredientes naturales~Alta calidad~Promueve la salud digestiva~Sin granos
+23,Juguete para perros,Chuckit!,$8.99,Resistente~Ideal para juegos de lanzamiento
+24,Corral para mascotas,MidWest Homes for Pets,$39.99,Plegable~Fácil de transportar~Espacioso
+25,Alimento para perros,Nutro,$17.99,Ingredientes de calidad~Sin conservantes artificiales~Salud digestiva
+26,Rascador para gatos,GoPetClub,$49.99,Área de juego y descanso~Poste para rascar~Incluye juguetes colgantes
+27,Juguete interactivo para perros,Kong Wobbler,$14.99,Dispensador de alimentos~Mantiene a los perros entretenidos
+28,Comedero para mascotas,Bergan,$7.99,Antideslizante~Fácil de limpiar~Duradero
+29,Alimento para gatos,Royal Canin,$24.99,Fórmula específica para razas~Salud digestiva~Pelo brillante
+30,Collar para perros,Coastal,$9.99,Ajustable~Cierre de seguridad~Diseño atractivo
+31,Arnés para perros,Rabbitgoo,$19.99,Ajustable~Cómodo~Control de tirones
+32,Alimento para perros,Pedigree,$19.50,Ingredientes naturales~Sin granos~Salud óptima
+33,Juguete para gatos,Temperament Pet,$6.99,Rellenable con catnip~Estimula el instinto de caza
+34,Bebedero para mascotas,Gravity Waterer,$12.99,Capacidad de 1 galón~Mantiene el agua fresca
+35,Peine para perros,Safari,$9.99,Elimina nudos y pelo suelto~Ideal para perros de pelo largo
+36,Juguete para perros,Outward Hound,$11.99,Texturas variadas~Estimula el juego activo
+37,Cepillo para gatos,Hertzko,$7.99,Suave y seguro~Elimina el pelo muerto~Promueve un pelaje saludable
+38,Arena para gatos,Wellness,$14.99,Ecológica~Sin polvo~Control de olores eficiente
+39,Ropa para perros,Pet Life,$19.99,Diseño moderno~Cómoda y ajustable~Ideal para climas fríos
+40,Alimento para peces,Tetra,$5.99,Variedad de sabores~Alta calidad nutricional~Para peces tropicales
+41,Transportadora para perros,AmazonBasics,$24.99,Aprobada por aerolíneas~Puerta con cierre seguro~Ventilación adecuada
+42,Juguete para gatos,Bergan Turbo Scratcher,$14.99,Incluye bola y rascador~Estimula el juego y el rascado
+43,Cepillo para perros,Pedigree,$17.99,Remueve el pelo suelto~Fácil de limpiar~Para pelo corto o largo
+44,Juguete para perros,Nylabone Dura,$9.99,Resistente a la masticación~Promueve la salud dental~Diversión duradera
+45,Alimento para perros,Merrick,$23.99,Ingredientes de calidad~Sin granos~Promueve una digestión saludable
+46,Correa para perros,Max and Neo,$16.99,Reflectante~Mango acolchado~Resistente y duradera
+47,Cama para gatos,Frisco,$22.99,Material suave y cálido~Diseño compacto~Ideal para espacios pequeños
+48,Juguete para perros,West Paw Design,$13.99,Resistente~Libre de BPA~Ideal para juegos de buscar
+49,Arenero para gatos,Petmate,$16.99,Fácil acceso~Borde alto~Fácil de limpiar
+50,Alimento para perros,Wellness CORE,$29.99,Alta proteína~Ingredientes naturales~Sin granos~Salud digestiva
