@@ -67,19 +67,6 @@ while True:
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 10:
-            # Volver los valores normales
-            if flag_carga:
-                with open("Insumos.csv", "r", encoding= 'utf-8') as file:
-                    contenido_original = file.read()
-                with open("PPLab1\insumos.csv", "w", encoding= 'utf-8') as file2:
-                    file2.write(contenido_original)
-                file.close()
-                file2.close()
-                datos_insumos.clear()
-                flag_carga = False
-            else:
-                print("\nPrimero hay que cargar los datos.")
-        case 11:
             print("\nGracias por usar el programa!")
             break
         case _:

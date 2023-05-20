@@ -18,8 +18,7 @@ def mostrar_menu() -> int:
     07. Guardar en formato JSON
     08. Leer desde formato JSON
     09. Actualizar precios
-    10. Normalizar precios
-    11. Salir """)
+    10. Salir """)
     opcion = int(input("\n    Ingrese una opción: "))
     return opcion
 
