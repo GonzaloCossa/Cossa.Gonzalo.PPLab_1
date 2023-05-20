@@ -72,4 +72,3 @@ while True:
         case _:
             print("\nOpción invalida, reingrese.")
     os.system("pause")
-
