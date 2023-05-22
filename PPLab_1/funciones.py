@@ -1,6 +1,7 @@
 from functools import reduce
 import re
 import json
+import os
 
 def mostrar_menu() -> int: 
     """mostrar_menu Muestra el menú del programa
@@ -8,18 +9,26 @@ def mostrar_menu() -> int:
     Returns:
         int: Devuelve el numero de la opcion elegida
     """
-    print("""                   *** MENU INSUMOS TIENDA DE MASCOTAS ***\n
-    01. Cargar datos
-    02. Listar cantidad por marca
-    03. Listar insumos por marca
-    04. Buscar insumo por característica
-    05. Listar insumos ordenados
-    06. Realizar compras
-    07. Guardar en formato JSON
-    08. Leer desde formato JSON
-    09. Actualizar precios
-    10. Salir """)
-    opcion = int(input("\n    Ingrese una opción: "))
+    while True:
+        os.system("cls")
+        print("""                   *** MENU INSUMOS TIENDA DE MASCOTAS ***\n
+        01. Cargar datos
+        02. Listar cantidad por marca
+        03. Listar insumos por marca
+        04. Buscar insumo por característica
+        05. Listar insumos ordenados
+        06. Realizar compras
+        07. Guardar en formato JSON
+        08. Leer desde formato JSON
+        09. Actualizar precios
+        10. Salir """)
+
+        opcion = input("\n    Ingrese una opción: ")
+        if re.match(r'^\d+$', opcion): 
+            opcion = int(opcion)
+            if opcion >= 1 and opcion <= 10:
+                break
+        print("\n    Error, ingrese una opción válida: ")
     return opcion
 
 def cargar_csv(lista: list, archivo: str) -> int:

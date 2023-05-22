@@ -1,4 +1,4 @@
-from funciones import *
+from funciones import mostrar_menu, cargar_csv, crear_lista_sin_repetir, listar_cantidad_marca, listar_insumos_marca, buscar_caracteristica, listar_insumos_ordenados, realizar_compras, guardar_insumos_alimentos_json, leer_insumo_json, aplicar_aumento
 import os
 
 datos_insumos = []
@@ -67,6 +67,7 @@ while True:
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 10:
+            # PUNTO 10 
             print("\nGracias por usar el programa!")
             break
         case _:
