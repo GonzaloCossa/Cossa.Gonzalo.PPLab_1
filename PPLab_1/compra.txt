@@ -2,6 +2,6 @@ FACTURA DE COMPRA
 
 Cantidad   Producto                           Marca                    Subtotal   
 ---------------------------------------------------------------------------------
-   1       Transportadora para gatos          Sherpa                   $32.99
+  894      Alimento para perros               Iams                     $12963.00
 ---------------------------------------------------------------------------------
-El total de la compra es de: $32.99
+El total de la compra es de: $12963.0

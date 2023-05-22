@@ -28,7 +28,8 @@ def mostrar_menu() -> int:
             opcion = int(opcion)
             if opcion >= 1 and opcion <= 10:
                 break
-        print("\n    Error, ingrese una opción válida: ")
+        print("\n    Error, opcion invalida")
+        os.system("pause")
     return opcion
 
 def cargar_csv(lista: list, archivo: str) -> int:
@@ -103,14 +104,18 @@ def buscar_caracteristica(lista_insumos: list) -> None:
     Args:
         lista_insumos (list): Lista de los insumos disponibles
     """    
-    patron = str(input("Porfavor, ingrese la caracteristica que desea buscar: "))
+    patron = str(input("\nPorfavor, ingrese la caracteristica que desea buscar: "))
+    while patron == '':
+        patron = str(input("\nError, no ingresó una caracteristica, reingrese: "))
+
     lista_insumos_carac = []
     for insumo in lista_insumos:
         if re.findall(patron, insumo['CARACTERISTICAS']):
             lista_insumos_carac.append(insumo)
     if lista_insumos_carac:
+        print(f"\nEstos son los insumos que incluyen como caracteristica {patron}:")
         mostrar_insumos(lista_insumos_carac)
-    else: print("No existen insumos con esa caracteristica.")
+    else: print("\nNo existen insumos con esa caracteristica.")
 
 def listar_insumos_ordenados(lista: list, key_uno: str, key_dos: str):
     """listar_insumos_ordenados Recorre la lista de insumos y ordena con un burbujeo 
@@ -149,12 +154,20 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
     subtotal = 0.0
     hay_compra = False
     seguir = 's'
+    salir = 'n'
 
     while seguir.lower() == 's':
         print("\nEstas son las marcas disponibles:\n")
         for marca in lista_marcas:
             print(f"{marca}")
-        marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: ")).capitalize()
+        marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: ")).title()
+        while marca_ingresada == '':
+            salir = str(input("\n No hay ingresado ninguna marca, desea salir? s/n: ")).lower()
+            if salir == 'n':
+                marca_ingresada = str(input("\nReingrese una marca porfavor: ")).title()
+            else:
+                break
+        
         lista_marca_ingresada = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada, lista_insumos))
 
         if lista_marca_ingresada:
@@ -162,13 +175,16 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
             mostrar_insumos(lista_marca_ingresada)
 
             id_ingresado = str(input("\nIngrese el ID del producto que quiere: "))
+            while id_ingresado == '':
+                id_ingresado = str(input("\nError, no ingresó ningún ID, reingrese: "))
+
             producto_elegido = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
             
             if producto_elegido:
                 producto_elegido = producto_elegido[0]
                 cantidad_ingresada = int(input("\nIngrese la cantidad del producto que desea comprar: "))
                 while cantidad_ingresada < 1:
-                    cantidad_ingresada = input("\nError, cantidad invalida, reingrese: ")
+                    cantidad_ingresada = int(input("\nError, cantidad invalida, reingrese: "))
                 productos_elegidos.append(producto_elegido)
                 cantidad_elegidos.append(cantidad_ingresada)
                 subtotal = float(re.sub(r'[^\d.]', '', producto_elegido['PRECIO'])) * cantidad_ingresada
@@ -177,14 +193,21 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
             else: 
                 print(f"\nNo existe el ID {id_ingresado} para la marca {marca_ingresada}")
 
-        else: print(f"\nNo hay insumos para la marca {marca_ingresada}")
+        else:
+            if salir != 's': 
+                print(f"\nNo hay insumos para la marca {marca_ingresada}")
 
-        seguir = input("\nDesea seguir comprando? s/n: ")
+        if salir == 's':
+            break
+
+        seguir = str(input("\nDesea seguir comprando? s/n: ")).lower()
+        while seguir != 's' and seguir != 'n':
+            seguir = str(input("\nRespuesta invalida, desea seguir comprando? s/n: ")).lower()
 
     if hay_compra:
         total = reduce(lambda ant, sig: ant + sig, subtotales)
         print(f"\nEl total de la compra es de: ${total}")
-        with open("PPLab1\compra.txt", "w") as file:
+        with open("PPLab_1\compra.txt", "w") as file:
             file.write("FACTURA DE COMPRA\n\n")
             file.write("Cantidad   Producto                           Marca                    Subtotal   \n")
             file.write("---------------------------------------------------------------------------------\n")

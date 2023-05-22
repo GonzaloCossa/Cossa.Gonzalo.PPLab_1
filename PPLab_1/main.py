@@ -9,7 +9,7 @@ while True:
     match mostrar_menu():
         case 1:
             # PUNTO 1
-            if cargar_csv(datos_insumos, "PPLab1\insumos.csv"):
+            if cargar_csv(datos_insumos, "PPLab_1\insumos.csv"):
                 print("\n¡Los insumos de la tieda de mascotas han sido cargados correctamente!")
                 flag_carga = True
             else: 
@@ -50,19 +50,19 @@ while True:
         case 7:
             # PUNTO 7
             if flag_carga:
-                guardar_insumos_alimentos_json(datos_insumos, r"PPLab1\nombres_con_alimento.json")
+                guardar_insumos_alimentos_json(datos_insumos, r"PPLab_1\nombres_con_alimento.json")
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 8:
             # PUNTO 8
             if flag_carga:
-                leer_insumo_json(r"PPLab1\nombres_con_alimento.json")
+                leer_insumo_json(r"PPLab_1\nombres_con_alimento.json")
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 9:
             # PUNTO 9
             if flag_carga:
-                aplicar_aumento(datos_insumos, "PPLab1\insumos.csv")
+                aplicar_aumento(datos_insumos, "PPLab_1\insumos.csv")
                 flag_carga = False
             else:
                 print("\nPrimero hay que cargar los datos.")
