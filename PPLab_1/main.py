@@ -1,7 +1,8 @@
-from funciones import mostrar_menu, cargar_csv, crear_lista_sin_repetir, listar_cantidad_marca, listar_insumos_marca, buscar_caracteristica, listar_insumos_ordenados, realizar_compras, guardar_insumos_alimentos_json, leer_insumo_json, aplicar_aumento
+from funciones import *
 import os
 
 datos_insumos = []
+lista_marcas = []
 flag_carga = False
 
 while True:
@@ -69,6 +70,19 @@ while True:
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 10:
+            if flag_carga:
+                nuevo_insumo = alta_insumo(datos_insumos)
+                datos_insumos.append(nuevo_insumo)
+                flag_carga = False
+            else:
+                print("\nPrimero hay que cargar los datos.")
+        case 11:
+            if flag_carga:
+                copia_datos = datos_insumos.copy()
+                guardar_segun_exportacion(copia_datos)
+            else:
+                print("\nPrimero hay que cargar los datos.")
+        case 12:
             # PUNTO 10 
             print("\nGracias por usar el programa!")
             break

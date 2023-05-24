@@ -21,13 +21,15 @@ def mostrar_menu() -> int:
         7.  Guardar en formato JSON
         8.  Leer desde formato JSON
         9.  Actualizar precios
-        10. Salir """)
+        10. Agregar nuevo producto
+        11. Guardar nuevos productos
+        12. Salir """)
 
         opcion = input("\nIngrese una opción: ")
-        # Valido que solo entre numeros y que esté entre 1 y 10
+        # Valido que solo entre numeros y que esté entre 1 y 11
         if re.match(r'^\d+$', opcion): 
             opcion = int(opcion)
-            if opcion >= 1 and opcion <= 10:
+            if opcion >= 1 and opcion <= 12:
                 break
         print("\nError, opcion invalida")
         os.system("pause")
@@ -322,6 +324,115 @@ def aplicar_aumento(lista_insumos: list, archivo: str) -> None:
 
         # Se encarga de limpiar la lista de insumos antigua para luego actualizarla entrando a la opcion 1 del menú de nuevo
         lista_insumos.clear()
+
+def alta_insumo(lista_insumos: list) -> dict:
+    lista_id = []
+    marcas = []
+    seguir = 's'
+
+    for insumo in lista_insumos:
+        lista_id.append(insumo['ID'])
+
+    with open("PPLab_1\marcas.txt", "r", encoding= 'utf-8') as file:
+        for linea in file:
+            marca = linea.strip()
+            marcas.append(marca)
+
+    print("\nEstas son las marcas disponibles:\n")
+    for marca in marcas:
+        print(f"{marca}")
+    
+    marca_ingresada = str(input("\nPorfavor, ingrese la marca: ")).title()
+    while marca_ingresada == '' or marca_ingresada not in marcas:
+        marca_ingresada = str(input("\nReingrese una marca porfavor: ")).title()
+
+    id_ingresado = str(input("\nIngrese el ID del producto que quiere: "))
+    while id_ingresado == '' or id_ingresado in lista_id:
+        id_ingresado = str(input("\nError, ID invalido, reingrese: "))
+
+    nombre_ingresado = str(input("\nIngrese el nombre del producto que quiere: "))
+    while nombre_ingresado == '' or re.search(r'\d', nombre_ingresado):
+        nombre_ingresado = str(input("\nError, nombre invalido, reingrese: "))
+
+    precio_ingresado = input("\nIngrese el precio del producto: ")
+    while not precio_ingresado.isdigit() or int(precio_ingresado) < 0:
+        precio_ingresado = input("\nInvalido, vuelva a ingresar el precio del producto: ")
+    precio_ingresado = int(precio_ingresado)
+
+    caracteristicas_ingresadas = []
+
+    while seguir == 's' and len(caracteristicas_ingresadas) < 3:
+        caracteristica_ingresada = str(input("\nIngrese una caracteristica para el producto: "))
+        while caracteristica_ingresada == '':
+            caracteristica_ingresada = str(input("\nIngrese una caracteristica valida para el producto: "))
+            
+        caracteristicas_ingresadas.append(caracteristica_ingresada)
+
+        if len(caracteristicas_ingresadas) >= 3:
+            break
+
+        seguir = str(input("\nDesea seguir agregando caracteristicas? s/n: ")).lower()
+        while seguir != 's' and seguir != 'n':
+            seguir = str(input("\nRespuesta invalida, desea seguir agregando caracteristicas? s/n: ")).lower()
+        
+    caracteristicas_unidas = "~".join(caracteristicas_ingresadas)
+    
+    precio_ingresado = "${:.2f}".format(precio_ingresado)
+    nuevo_insumo = {'ID': id_ingresado, 'NOMBRE': nombre_ingresado, 'MARCA': marca_ingresada, 'PRECIO': precio_ingresado, 'CARACTERISTICAS': caracteristicas_unidas}
+    return nuevo_insumo
+
+def obtener_formato():
+                while True:
+                    print("Selecciona el formato de exportación:")
+                    print("1. CSV")
+                    print("2. JSON")
+                    opcion = input("Ingresa el numero correspondiente: ")
+
+                    if opcion == "1":
+                        return "csv"
+                    elif opcion == "2":
+                        return "json"
+                    else:
+                        print("Opción inválida. Intenta de nuevo.")
+
+def guardar_como_csv(lista_insumos):
+    lineas = []
+    campos = list(lista_insumos[0].keys())
+    lineas.append(','.join(campos))
+
+    for item in lista_insumos:
+        values = [str(item[key]) for key in campos]
+        lineas.append(','.join(values))
+
+    contenido_csv = '\n'.join(lineas)
+    return contenido_csv
+
+def guardar_como_json(lista_insumos):
+    return json.dumps(lista_insumos)
+
+def guardar_segun_exportacion(lista_insumos):
+    formato_exportacion = obtener_formato()
+
+    nombre_archivo = str(input("\nIngrese el nombre del archivo donde quiere (sin extensión): "))
+    while nombre_archivo == '' or re.search(r'\d', nombre_archivo):
+        nombre_archivo = str(input("\nError, nombre invalido, reingrese (sin extensión): "))
+
+    # Filtro que no se dupliquen
+    lista_insumos_unicos = list({tuple(d.items()) for d in lista_insumos})
+
+    if formato_exportacion == "csv":
+        nombre_archivo += ".csv"
+        contenido_csv = guardar_como_csv(lista_insumos_unicos)
+
+        with open(nombre_archivo, "w", encoding= 'utf-8') as file:
+            file.write(contenido_csv)
+
+    elif formato_exportacion == "json":
+        nombre_archivo += ".json"
+        contenido_json = guardar_como_json(lista_insumos_unicos)
+        
+        with open(nombre_archivo, "w", encoding= 'utf-8', indent= 4) as file:
+            file.write(contenido_json)
 
 def mostrar_insumo(insumo: dict):
     """mostrar_insumo Se encarga de mostrar los valores de un insumo especifico
