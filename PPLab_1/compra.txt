@@ -2,6 +2,6 @@ FACTURA DE COMPRA
 
 Cantidad   Producto                           Marca                    Subtotal   
 ---------------------------------------------------------------------------------
-   2       Alimento para perros               Pedigree                 $25.98
+   1       Alimento para perros               Pedigree                 $12.99
 ---------------------------------------------------------------------------------
-El total de la compra es de: $25.98
+El total de la compra es de: $12.99
