@@ -9,11 +9,12 @@ while True:
     match mostrar_menu():
         case 1:
             # PUNTO 1
-            if cargar_csv(datos_insumos, "PPLab_1\insumos.csv"):
-                print("\n¡Los insumos de la tieda de mascotas han sido cargados correctamente!")
-                flag_carga = True
+            if not flag_carga:
+                if cargar_csv(datos_insumos, "PPLab_1\insumos.csv"):
+                    print("\n¡Los insumos de la tieda de mascotas han sido cargados correctamente!")
+                    flag_carga = True
             else: 
-                print("\nOcurrio un error con la carga de datos.")
+                print("\nLa carga de datos ya ha sido realizada anteriormente.")
         case 2:
             # PUNTO 2
             if flag_carga:
@@ -63,6 +64,7 @@ while True:
             # PUNTO 9
             if flag_carga:
                 aplicar_aumento(datos_insumos, "PPLab_1\insumos.csv")
+                print("\nLos precios de los insumos han sido actualizados, vuelva a carga el CSV.")
                 flag_carga = False
             else:
                 print("\nPrimero hay que cargar los datos.")
@@ -70,6 +72,4 @@ while True:
             # PUNTO 10 
             print("\nGracias por usar el programa!")
             break
-        case _:
-            print("\nOpción invalida, reingrese.")
     os.system("pause")

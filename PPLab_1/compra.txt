@@ -2,6 +2,6 @@ FACTURA DE COMPRA
 
 Cantidad   Producto                           Marca                    Subtotal   
 ---------------------------------------------------------------------------------
-  894      Alimento para perros               Iams                     $12963.00
+   2       Alimento para perros               Pedigree                 $25.98
 ---------------------------------------------------------------------------------
-El total de la compra es de: $12963.0
+El total de la compra es de: $25.98

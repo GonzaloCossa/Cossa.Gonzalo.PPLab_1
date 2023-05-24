@@ -12,23 +12,24 @@ def mostrar_menu() -> int:
     while True:
         os.system("cls")
         print("""                   *** MENU INSUMOS TIENDA DE MASCOTAS ***\n
-        01. Cargar datos
-        02. Listar cantidad por marca
-        03. Listar insumos por marca
-        04. Buscar insumo por característica
-        05. Listar insumos ordenados
-        06. Realizar compras
-        07. Guardar en formato JSON
-        08. Leer desde formato JSON
-        09. Actualizar precios
+        1.  Cargar datos
+        2.  Listar cantidad por marca
+        3.  Listar insumos por marca
+        4.  Buscar insumo por característica
+        5.  Listar insumos ordenados
+        6.  Realizar compras
+        7.  Guardar en formato JSON
+        8.  Leer desde formato JSON
+        9.  Actualizar precios
         10. Salir """)
 
-        opcion = input("\n    Ingrese una opción: ")
+        opcion = input("\nIngrese una opción: ")
+        # Valido que solo entre numeros y que esté entre 1 y 10
         if re.match(r'^\d+$', opcion): 
             opcion = int(opcion)
             if opcion >= 1 and opcion <= 10:
                 break
-        print("\n    Error, opcion invalida")
+        print("\nError, opcion invalida")
         os.system("pause")
     return opcion
 
@@ -103,17 +104,35 @@ def buscar_caracteristica(lista_insumos: list) -> None:
 
     Args:
         lista_insumos (list): Lista de los insumos disponibles
-    """    
-    patron = str(input("\nPorfavor, ingrese la caracteristica que desea buscar: "))
-    while patron == '':
-        patron = str(input("\nError, no ingresó una caracteristica, reingrese: "))
+    """
+    # Creo una lista de caracteristicas sin repetir para luegro mostrar todas antes del input del usuario
+    caracteristicas = []
+    caracteristicas_separadas = [] 
+    for insumo in lista_insumos:
+        caracteristicas.append(insumo['CARACTERISTICAS'])
 
+    for i in caracteristicas:
+        caracteristica = i.split("~")
+        caracteristicas_separadas.extend(caracteristica)
+
+    caracteristicas_sin_repetir = list(set(caracteristicas_separadas))
+    print("\nEstas son las caracteristicas disponibles:\n")
+    for caracteristica in caracteristicas_sin_repetir:
+        print(f"{caracteristica}") 
+
+    # Se solicita la caracteristica y se valida
+    carac_ingresada = str(input("\nPorfavor, ingrese la caracteristica que desea buscar: "))
+    while carac_ingresada == '':
+        carac_ingresada = str(input("\nError, no ingresó una caracteristica, reingrese: "))
+    patron = re.compile(f"(^|~){carac_ingresada}(~|$)", flags= re.IGNORECASE)
+
+    # Buscamos los insumos que coincidan con la caracteristica y lo mostramos en consola
     lista_insumos_carac = []
     for insumo in lista_insumos:
         if re.findall(patron, insumo['CARACTERISTICAS']):
             lista_insumos_carac.append(insumo)
     if lista_insumos_carac:
-        print(f"\nEstos son los insumos que incluyen como caracteristica {patron}:")
+        print(f"\nEstos son los insumos que incluyen como caracteristica {carac_ingresada}:")
         mostrar_insumos(lista_insumos_carac)
     else: print("\nNo existen insumos con esa caracteristica.")
 
@@ -125,18 +144,23 @@ def listar_insumos_ordenados(lista: list, key_uno: str, key_dos: str):
         lista (list): Lista destinada a ser ordenada
         key_uno (str): Primer campo en el cual se va a basar el ordenamiento
         key_dos (str): Segundo campo en el cual se va a basar el ordenamiento en caso de igualdad en el primer campo
-    """    
-    lista_aux = lista
+    """   
+    # Copiamos los insumos originales en una lista auxiliar
+    lista_aux = [insumo.copy() for insumo in lista]
+    
+    # Acá cambiamos la caracteristica de cada insumo a solo la primera de cada uno y los mostramos
+    for insumo in lista_aux:
+        primer_caracteristica = insumo['CARACTERISTICAS'].split("~", 1)[0]
+        insumo['CARACTERISTICAS'] = primer_caracteristica
+
+    # Ordenamos la lista auxiliar
     for i in range(len(lista_aux) - 1):
         for j in range(i + 1, len(lista_aux)):
-            if((((lista_aux[i][key_uno] == lista_aux[j][key_uno] and lista_aux[i][key_dos] < lista_aux[j][key_dos]) or lista_aux[i][key_uno] > lista_aux[j][key_uno]))):
-                    aux = lista_aux[i]
-                    lista_aux[i] = lista_aux[j]
-                    lista_aux[j] = aux
+            if lista_aux[i][key_uno] > lista_aux[j][key_uno] or (lista_aux[i][key_uno] == lista_aux[j][key_uno] and float(re.sub(r'\$', '', lista_aux[i][key_dos])) < float(re.sub(r'\$', '', lista_aux[j][key_dos]))):
+                aux = lista_aux[i]
+                lista_aux[i] = lista_aux[j]
+                lista_aux[j] = aux
     
-    for insumo in lista_aux:
-        texto_encontrado = insumo['CARACTERISTICAS'].split("~", 1)[0]
-        insumo['CARACTERISTICAS'] = texto_encontrado
     mostrar_insumos(lista_aux)
 
 def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
@@ -157,38 +181,57 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
     salir = 'n'
 
     while seguir.lower() == 's':
+        # Mostramos todas las marcas sin repetir
         print("\nEstas son las marcas disponibles:\n")
         for marca in lista_marcas:
             print(f"{marca}")
+
+        # Solicitamos y validamos la marca ingresada
         marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: ")).title()
         while marca_ingresada == '':
-            salir = str(input("\n No hay ingresado ninguna marca, desea salir? s/n: ")).lower()
+            salir = str(input("\nNo hay ingresado ninguna marca, desea salir? s/n: ")).lower()
             if salir == 'n':
                 marca_ingresada = str(input("\nReingrese una marca porfavor: ")).title()
             else:
                 break
         
+        # Con la funcion filter y list añadimos a la lista de insumos con la marca ingresada, comparando la marca del insumo con la ingresada
         lista_marca_ingresada = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada, lista_insumos))
 
+        # Si se se encontraron insumos con esa marca los mostramos sino, avisamos que no hay insumos con esa marca
         if lista_marca_ingresada:
             print(f"\nEstos son los productos disponibles de {marca_ingresada}:")
             mostrar_insumos(lista_marca_ingresada)
 
+            # Acá pedimos el ID del producto que desea el usuario y validamos que no esté vacio
             id_ingresado = str(input("\nIngrese el ID del producto que quiere: "))
             while id_ingresado == '':
                 id_ingresado = str(input("\nError, no ingresó ningún ID, reingrese: "))
 
+            # En caso de encontrar coincidencia con los datos ingresados y el producto elegido lo guardamos
             producto_elegido = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
             
+            # Si se encontró un insumo con esa marca y ID seguimos pidiendo datos, sino avisamos que no existe ese ID para la marca ingresada
             if producto_elegido:
+                # El producto que se eligió es el primero de la lista
                 producto_elegido = producto_elegido[0]
-                cantidad_ingresada = int(input("\nIngrese la cantidad del producto que desea comprar: "))
-                while cantidad_ingresada < 1:
-                    cantidad_ingresada = int(input("\nError, cantidad invalida, reingrese: "))
+
+                # Pedimos la cantidad del insumo que desea el usuario y validamos que no sea negativo ni que ingrese una cadena vacia
+                cantidad_ingresada = str(input("\nIngrese la cantidad del producto que desea comprar: "))
+                while cantidad_ingresada == '' or int(cantidad_ingresada) < 1:
+                    cantidad_ingresada = str(input("\nError, cantidad invalida, reingrese: "))
+                cantidad_ingresada = int(cantidad_ingresada)
+
+                # Agregamos a las listas el producto y la cantidad para luego poder mostrarlos en el .TXT
                 productos_elegidos.append(producto_elegido)
                 cantidad_elegidos.append(cantidad_ingresada)
-                subtotal = float(re.sub(r'[^\d.]', '', producto_elegido['PRECIO'])) * cantidad_ingresada
+
+                # Sacamos el "$" para evitar problemas y calculas el subtotal del producto ingresado, agregamos el subtotal a la lista de subtotales
+                precio = float(re.sub(r'\$', '', producto_elegido['PRECIO']))
+                subtotal = precio * cantidad_ingresada
                 subtotales.append(subtotal)
+
+                # Flag para identificar que se realizó la compra
                 hay_compra = True
             else: 
                 print(f"\nNo existe el ID {id_ingresado} para la marca {marca_ingresada}")
@@ -197,16 +240,22 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
             if salir != 's': 
                 print(f"\nNo hay insumos para la marca {marca_ingresada}")
 
+        # En caso de que el usuario decida salir antes de tiempo por ingresar un dato erroneamente 
         if salir == 's':
             break
-
+        
+        # En caso de que se haga realizado la primer compra, se le pregunta al usuario si desea seguir comprando, validamos el ingreso 
         seguir = str(input("\nDesea seguir comprando? s/n: ")).lower()
         while seguir != 's' and seguir != 'n':
             seguir = str(input("\nRespuesta invalida, desea seguir comprando? s/n: ")).lower()
 
+    # En caso de que haya una compra, calculamos su total y escribimos los datos en el .TXT
     if hay_compra:
+        # Total de toda la compra
         total = reduce(lambda ant, sig: ant + sig, subtotales)
         print(f"\nEl total de la compra es de: ${total}")
+
+        # Abrimos el archivo para luego escribir todos los insumos que compró
         with open("PPLab_1\compra.txt", "w") as file:
             file.write("FACTURA DE COMPRA\n\n")
             file.write("Cantidad   Producto                           Marca                    Subtotal   \n")
@@ -226,9 +275,13 @@ def guardar_insumos_alimentos_json(lista_insumos: list, archivo: str) -> None:
     Args:
         lista_insumos (list): Lista de los insumos dispobles
         archivo (str): Dirección del archivo donde se van a guardar los insumos filtrados
-    """    
+    """
+        
+    # Abrimos el archivo .JSON
     with open(archivo, "w", encoding= 'utf-8') as file:
+        # Filtramos aquellos insumos que tengas en el nombre 'Alimento'
         lista_filtrada = list(filter(lambda insumo: re.findall('Alimento', insumo['NOMBRE']), lista_insumos))
+        #Escribimos los insumos en el archivo
         json.dump(lista_filtrada, file, ensure_ascii=False, indent=4)
 
 def leer_insumo_json(archivo: str) -> None:
@@ -242,13 +295,32 @@ def leer_insumo_json(archivo: str) -> None:
         mostrar_insumos(lista)
 
 def aplicar_aumento(lista_insumos: list, archivo: str) -> None:
+    """aplicar_aumento Se encarga de actualizar los precios de una lista aumentandolos en un 8.4% y escribiendo los nuevos insumos en el archivo .csv
+
+    Args:
+        lista_insumos (list): Lista de los insumos con datos solicitados a ser actualizados
+        archivo (str): Dirección del archivo .csv que contiene los datos de los insumos
+    """    
+    # Funcion lambda que sirve para quitarle el simbolo '$' y se le agrega el 8.4%, luego volvemos a colocarle el simbolo
+    precio_actualizado = lambda insumo: "${:.2f}".format(round(float(re.sub(r'\$', '', insumo['PRECIO'])) * 1.084, 2))
+
+    # Agreamos a una lista de insumos nueva los insumos con el campo 'PRECIO' actualizado
+    insumos_actualizados = [{campo: valor if campo != "PRECIO" else precio_actualizado(insumo) for campo, valor in insumo.items()} for insumo in lista_insumos]
+    
+    # Abrimos el archivo CSV
     with open(archivo, "w", encoding= 'utf-8') as file:
-        precio_actualizado = lambda insumo: "${:.2f}".format(round(float(re.sub(r'\$', '', insumo['PRECIO'])) * 1.084, 2))
-        insumos_actualizados = list(map(lambda insumo: {campo: valor if campo != "PRECIO" else precio_actualizado(insumo) for campo, valor in insumo.items()}, lista_insumos))
         campos = ["ID","NOMBRE","MARCA","PRECIO","CARACTERISTICAS"]
-        file.write(",".join(campos) + "\n")
-        lines = [','.join(str(valor) for valor in insumo.values()) for insumo in insumos_actualizados]
-        file.write('\n'.join(lines))
+        
+        # Se escribe como primera linea los campos
+        file.write(','.join(campos) + '\n')
+
+        # Se crea una lista llamada valores que representa en cadena los valores de cada insumo separados por ','
+        valores = [','.join(str(valor) for valor in insumo.values()) for insumo in insumos_actualizados]
+
+        # Coloca '\n' al final de cada linea
+        file.write('\n'.join(valores))
+
+        # Se encarga de limpiar la lista de insumos antigua para luego actualizarla entrando a la opcion 1 del menú de nuevo
         lista_insumos.clear()
 
 def mostrar_insumo(insumo: dict):
