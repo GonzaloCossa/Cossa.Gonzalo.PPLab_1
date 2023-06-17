@@ -27,13 +27,10 @@ def mostrar_menu() -> int:
     while True:
         try:
             opcion = int(input("\nIngrese una opción: "))
+            if opcion > 0 and opcion <= 12:
+                return opcion
         except ValueError:
-            print("\nOpcion invalida, reingrese: ")
-            continue
-        if opcion > 0 and opcion <= 12:
-            return opcion
-        else:
-            print("\nOpcion invalida, reingrese: ")
+            print("\nIngrese una opcion valida.")
 
 def cargar_csv(lista: list) -> int:
     """cargar_csv cargar_csv Se encarga de leer las filas del archivo convirtiendolas en diccionarios 
@@ -84,11 +81,13 @@ def listar_cantidad_marca(lista_marcas: list, lista_insumos: list) -> None:
         lista_marcas (list): Lista con todas las marcas disponibles
         lista_insumos (list): Lista con todos los insumos disponibles
     """    
-    print("--------------------------------------------------------------------")
+    print("------------------------------------------")
+    print("|    MARCA                   |  CANTIDAD |")
+    print("------------------------------------------")
     for marca in lista_marcas:
         cant_por_marca = len(list(filter(lambda insumo: insumo['MARCA'] == marca, lista_insumos)))
-        print(f"La marca es: {marca} y su cantidad de insumos es: {cant_por_marca}")
-        print("--------------------------------------------------------------------")
+        print(f"|    {marca:23s} |     {cant_por_marca:1d}     |")
+        print("------------------------------------------")
 
 def listar_insumos_marca(lista_marcas: list, lista_insumos: list) -> None:
     """listar_insumos_marca Recorremos la lista de marcas y mostramos el nombre y precio los insumos que pertenecen a ella
@@ -180,11 +179,14 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
         cantidad_elegidos (list): Cantidad de los productos elegidos en compras previamente realizadas
         subtotales (list): Lista con los subtotales de los productos elegidos en compras previamente realizadas
     """  
+    lista_id = []
     producto_elegido = {}
     subtotal = 0.0
     hay_compra = False
     seguir = 's'
     salir = 'n'
+
+
 
     while seguir.lower() == 's':
         # Mostramos todas las marcas sin repetir
@@ -210,9 +212,16 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
             mostrar_insumos(lista_marca_ingresada)
 
             # Acá pedimos el ID del producto que desea el usuario y validamos que no esté vacio
-            id_ingresado = str(input("\nIngrese el ID del producto que quiere: "))
-            while id_ingresado == '':
-                id_ingresado = str(input("\nError, no ingresó ningún ID, reingrese: "))
+            while True:
+                try:
+                    id_ingresado = int(input("\nIngrese el ID del producto que quiere: "))
+                    if id_ingresado < 0 or id_ingresado > int(lista_insumos[-1]['ID']):
+                        print(f"\nNo existe el ID {id_ingresado} para la marca {marca_ingresada}")
+                    else:
+                        id_ingresado = str(id_ingresado)
+                        break
+                except ValueError:
+                    print("\nError, ingresó un ID invalido.")
 
             # En caso de encontrar coincidencia con los datos ingresados y el producto elegido lo guardamos
             producto_elegido = next(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
@@ -237,8 +246,6 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
 
                 # Flag para identificar que se realizó la compra
                 hay_compra = True
-            else: 
-                print(f"\nNo existe el ID {id_ingresado} para la marca {marca_ingresada}")
 
         else:
             if salir != 's': 

@@ -16,7 +16,7 @@ while True:
             # PUNTO 1                                      Carga Archivo CSV
             if not flag_carga:
                 if cargar_csv(datos_insumos):
-                    print("\n¡Los insumos de la tieda de mascotas han sido cargados correctamente!")
+                    print("\n¡Los insumos de la tieda de mascotas han sido cargados correctamente!\n")
                     flag_carga = True
             else: 
                 print("\nLa carga de datos ya ha sido realizada anteriormente.")
