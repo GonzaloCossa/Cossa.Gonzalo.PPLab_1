@@ -33,7 +33,7 @@ def mostrar_menu() -> int:
             print("\nIngrese una opcion valida.")
 
 def cargar_csv(lista: list) -> int:
-    """cargar_csv cargar_csv Se encarga de leer las filas del archivo convirtiendolas en diccionarios 
+    """cargar_csv cargar_csv Se encarga de leer las filas del archivo ingresado por el usuario convirtiendolas en diccionarios 
     y separarando los datos y campos, lo termina guardando en una lista de diccionarios 
 
     Args:
@@ -44,7 +44,7 @@ def cargar_csv(lista: list) -> int:
     """    
     todoOk = 0  
     
-    archivo = input("\nIngrese el nombre del archivo que desea leer: ")
+    archivo = input("\nIngrese el nombre del archivo .CSV que desea leer (sin extensión): ")
     try:
         with open(archivo + ".csv", "r", encoding= 'utf-8') as file:
             campos = file.readline().strip().split(',')
@@ -179,14 +179,11 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
         cantidad_elegidos (list): Cantidad de los productos elegidos en compras previamente realizadas
         subtotales (list): Lista con los subtotales de los productos elegidos en compras previamente realizadas
     """  
-    lista_id = []
     producto_elegido = {}
     subtotal = 0.0
     hay_compra = False
     seguir = 's'
     salir = 'n'
-
-
 
     while seguir.lower() == 's':
         # Mostramos todas las marcas sin repetir
