@@ -49,7 +49,7 @@ def cargar_csv(lista: list) -> int:
     
     archivo = input("\nIngrese el nombre del archivo que desea leer: ")
     try:
-        with open("PPLab_1/" + archivo + ".csv", "r", encoding= 'utf-8') as file:
+        with open(archivo + ".csv", "r", encoding= 'utf-8') as file:
             campos = file.readline().strip().split(',')
             for linea in file:
                 valores = linea.strip().split(",")
@@ -261,7 +261,7 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
         print(f"\nEl total de la compra es de: ${total}")
 
         # Abrimos el archivo para luego escribir todos los insumos que compró
-        with open("PPLab_1\compra.txt", "w") as file:
+        with open("compra.txt", "w") as file:
             file.write("FACTURA DE COMPRA\n\n")
             file.write("Cantidad   Producto                           Marca                    Subtotal   \n")
             file.write("---------------------------------------------------------------------------------\n")
@@ -346,7 +346,7 @@ def alta_insumo(lista_insumos: list) -> None:
     caracteristicas_ingresadas = []
     seguir = 's'
 
-    with open("PPLab_1\marcas.txt", "r", encoding= 'utf-8') as file:
+    with open("marcas.txt", "r", encoding= 'utf-8') as file:
         for linea in file:
             marca = linea.strip()
             marcas.append(marca)
@@ -384,9 +384,10 @@ def alta_insumo(lista_insumos: list) -> None:
         if len(caracteristicas_ingresadas) >= 3:
             break
 
-        seguir = str(input("\nDesea seguir agregando caracteristicas? s/n: ")).lower()
-        while seguir != 's' and seguir != 'n':
-            seguir = str(input("\nRespuesta invalida, desea seguir agregando caracteristicas? s/n: ")).lower()
+        while True:
+            seguir = input("\nDesea seguir agregando caracteristicas? s/n: ").lower()
+            if seguir == 's' or seguir == 'n':
+                break
         
     caracteristicas_unidas = "~".join(caracteristicas_ingresadas)
     
@@ -402,7 +403,7 @@ def guardar_segun_exportacion(lista_insumos: list) -> None:
         lista_insumos (list): lista de diccionarios 
     """    
     while True:
-        formato_exportacion = input("En que tipo de archivo desea guardar los insumos? (csv o json): ")
+        formato_exportacion = input("En que tipo de archivo desea guardar los insumos? (CSV o JSON): ").lower()
         if formato_exportacion == 'json' or formato_exportacion == 'csv':
             break
 

@@ -65,7 +65,7 @@ while True:
         case 9:
             # PUNTO 9                          Aplicar el Aumento del 8.4% a Los Insumos
             if flag_carga:
-                aplicar_aumento(datos_insumos, "PPLab_1\insumos.csv")
+                aplicar_aumento(datos_insumos, "insumos.csv")
                 print("\nLos precios de los insumos han sido actualizados, vuelva a carga el CSV.")
                 flag_carga = False
             else:
