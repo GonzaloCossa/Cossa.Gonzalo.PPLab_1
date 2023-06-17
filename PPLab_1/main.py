@@ -3,66 +3,67 @@ import os
 
 datos_insumos = []
 lista_marcas = []
+productos_elegidos = []
+cantidad_elegidos = []
+subtotales = []
 flag_carga = False
+flag_carga_archivo_json = False
 
 while True:
     os.system("cls")
     match mostrar_menu():
         case 1:
-            # PUNTO 1
+            # PUNTO 1                                      Carga Archivo CSV
             if not flag_carga:
-                if cargar_csv(datos_insumos, "PPLab_1\insumos.csv"):
+                if cargar_csv(datos_insumos):
                     print("\n¡Los insumos de la tieda de mascotas han sido cargados correctamente!")
                     flag_carga = True
             else: 
                 print("\nLa carga de datos ya ha sido realizada anteriormente.")
         case 2:
-            # PUNTO 2
+            # PUNTO 2                                  Listar Cantidad por Marca
             if flag_carga:
                 marcas_sin_repetir = crear_lista_sin_repetir(datos_insumos, 'MARCA')
                 listar_cantidad_marca(marcas_sin_repetir, datos_insumos)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 3:
-            # PUNTO 3
+            # PUNTO 3                                  Listar Insumos por Marca
             if flag_carga:
                 marcas_sin_repetir = crear_lista_sin_repetir(datos_insumos, 'MARCA')
                 listar_insumos_marca(marcas_sin_repetir, datos_insumos)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 4:
-            # PUNTO 4
+            # PUNTO 4                              Buscar Insumo por Caracteristica
             if flag_carga:
                 buscar_caracteristica(datos_insumos)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 5:
-            # PUNTO 5
+            # PUNTO 5                                  Listar Insumos Ordenados
             if flag_carga:
                 listar_insumos_ordenados(datos_insumos, 'MARCA', 'PRECIO')
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 6:
-            # PUNTO 6
+            # PUNTO 6                                      Realizar Compras
             if flag_carga:
                 marcas_sin_repetir = crear_lista_sin_repetir(datos_insumos, 'MARCA')
-                realizar_compras(datos_insumos, marcas_sin_repetir)
+                realizar_compras(datos_insumos, marcas_sin_repetir, productos_elegidos, cantidad_elegidos, subtotales)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 7:
-            # PUNTO 7
+            # PUNTO 7                   Guardar Insumos Con "Alimento" en el Nombre en Formato JSON
             if flag_carga:
-                guardar_insumos_alimentos_json(datos_insumos, r"PPLab_1\nombres_con_alimento.json")
+                guardar_insumos_alimentos_json(datos_insumos)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 8:
-            # PUNTO 8
-            if flag_carga:
-                leer_insumo_json(r"PPLab_1\nombres_con_alimento.json")
-            else:
-                print("\nPrimero hay que cargar los datos.")
+            # PUNTO 8                                      Leer Archivo JSON
+                leer_insumo_json()
         case 9:
-            # PUNTO 9
+            # PUNTO 9                          Aplicar el Aumento del 8.4% a Los Insumos
             if flag_carga:
                 aplicar_aumento(datos_insumos, "PPLab_1\insumos.csv")
                 print("\nLos precios de los insumos han sido actualizados, vuelva a carga el CSV.")
@@ -70,20 +71,19 @@ while True:
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 10:
+            # PUNTO 10                                     Nueva Alta Insumo
             if flag_carga:
-                nuevo_insumo = alta_insumo(datos_insumos)
-                datos_insumos.append(nuevo_insumo)
-                flag_carga = False
+                alta_insumo(datos_insumos)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 11:
+            # PUNTO 11                       Guardar los Nuevos Insumos y los Actualizados
             if flag_carga:
-                copia_datos = datos_insumos.copy()
-                guardar_segun_exportacion(copia_datos)
+                guardar_segun_exportacion(datos_insumos)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 12:
-            # PUNTO 10 
+            # PUNTO 12                                           SALIDA
             print("\nGracias por usar el programa!")
             break
     os.system("pause")

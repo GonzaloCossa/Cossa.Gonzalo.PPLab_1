@@ -9,55 +9,59 @@ def mostrar_menu() -> int:
     Returns:
         int: Devuelve el numero de la opcion elegida
     """
+    os.system("cls")
+    print("""                   *** MENU INSUMOS TIENDA DE MASCOTAS ***\n
+    1.  Cargar datos
+    2.  Listar cantidad por marca
+    3.  Listar insumos por marca
+    4.  Buscar insumo por característica
+    5.  Listar insumos ordenados
+    6.  Realizar compras
+    7.  Guardar en formato JSON
+    8.  Leer desde formato JSON
+    9.  Actualizar precios
+    10. Agregar nuevo producto
+    11. Guardar nuevos productos
+    12. Salir """)
+
     while True:
-        os.system("cls")
-        print("""                   *** MENU INSUMOS TIENDA DE MASCOTAS ***\n
-        1.  Cargar datos
-        2.  Listar cantidad por marca
-        3.  Listar insumos por marca
-        4.  Buscar insumo por característica
-        5.  Listar insumos ordenados
-        6.  Realizar compras
-        7.  Guardar en formato JSON
-        8.  Leer desde formato JSON
-        9.  Actualizar precios
-        10. Agregar nuevo producto
-        11. Guardar nuevos productos
-        12. Salir """)
+        try:
+            opcion = int(input("\nIngrese una opción: "))
+        except ValueError:
+            print("\nOpcion invalida, reingrese: ")
+            continue
+        if opcion > 0 and opcion <= 12:
+            return opcion
+        else:
+            print("\nOpcion invalida, reingrese: ")
 
-        opcion = input("\nIngrese una opción: ")
-        # Valido que solo entre numeros y que esté entre 1 y 11
-        if re.match(r'^\d+$', opcion): 
-            opcion = int(opcion)
-            if opcion >= 1 and opcion <= 12:
-                break
-        print("\nError, opcion invalida")
-        os.system("pause")
-    return opcion
-
-def cargar_csv(lista: list, archivo: str) -> int:
+def cargar_csv(lista: list) -> int:
     """cargar_csv cargar_csv Se encarga de leer las filas del archivo convirtiendolas en diccionarios 
     y separarando los datos y campos, lo termina guardando en una lista de diccionarios 
 
     Args:
         lista (list): Lista destino donde se guadará la lista de diccionarios
-        archivo (str): Dirección donde se encuentra el archivo que se tiene que leer
 
     Returns:
         int: Retorna una variable todoOk = 1 si los datos se cargaron correctamente y todoOk = 0 si no se cargó correctamente
     """    
     todoOk = 0  
-    with open(archivo, "r", encoding= 'utf-8') as file:
-        campos = file.readline().strip().split(',')
-        for linea in file:
-            valores = linea.strip().split(",")
-            item = {}
-            for i in range(len(campos)):
-                item[campos[i]] = valores[i]
-            lista.append(item)
-    if lista: 
-        todoOk = 1
-    return todoOk
+    
+    archivo = input("\nIngrese el nombre del archivo que desea leer: ")
+    try:
+        with open("PPLab_1/" + archivo + ".csv", "r", encoding= 'utf-8') as file:
+            campos = file.readline().strip().split(',')
+            for linea in file:
+                valores = linea.strip().split(",")
+                item = {}
+                for i in range(len(campos)):
+                    item[campos[i]] = valores[i]
+                lista.append(item)
+        if lista: 
+            todoOk = 1
+        return todoOk
+    except FileNotFoundError:
+        print("\nError, el archivo " + archivo + " no existe.")
 
 def crear_lista_sin_repetir(lista: list, campo: str) -> list:
     """crear_lista_sin_repetir Crea una lista la cual contiene sin repetir los valores de un campo elegido
@@ -165,18 +169,18 @@ def listar_insumos_ordenados(lista: list, key_uno: str, key_dos: str):
     
     mostrar_insumos(lista_aux)
 
-def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
+def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos: list, cantidad_elegidos: list, subtotales: list) -> None:
     """realizar_compras Se encarga de realizar las compras que solicite el usuario, mostrando marcas, solicitando un id y luego validando, 
     guarda la compra en compra.txt 
 
     Args:
         lista_insumos (list): Lista de los insumos disponibles
         lista_marcas (list): Lista de las marcas disponibles 
-    """    
-    cantidad_elegidos = []
-    productos_elegidos = []
-    producto_elegido = []
-    subtotales = []
+        productos_elegidos (list): Lista de los productos elegidos en compras previamente realizadas
+        cantidad_elegidos (list): Cantidad de los productos elegidos en compras previamente realizadas
+        subtotales (list): Lista con los subtotales de los productos elegidos en compras previamente realizadas
+    """  
+    producto_elegido = {}
     subtotal = 0.0
     hay_compra = False
     seguir = 's'
@@ -211,12 +215,10 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
                 id_ingresado = str(input("\nError, no ingresó ningún ID, reingrese: "))
 
             # En caso de encontrar coincidencia con los datos ingresados y el producto elegido lo guardamos
-            producto_elegido = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
+            producto_elegido = next(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
             
             # Si se encontró un insumo con esa marca y ID seguimos pidiendo datos, sino avisamos que no existe ese ID para la marca ingresada
             if producto_elegido:
-                # El producto que se eligió es el primero de la lista
-                producto_elegido = producto_elegido[0]
 
                 # Pedimos la cantidad del insumo que desea el usuario y validamos que no sea negativo ni que ingrese una cadena vacia
                 cantidad_ingresada = str(input("\nIngrese la cantidad del producto que desea comprar: "))
@@ -253,8 +255,9 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
 
     # En caso de que haya una compra, calculamos su total y escribimos los datos en el .TXT
     if hay_compra:
+
         # Total de toda la compra
-        total = reduce(lambda ant, sig: ant + sig, subtotales)
+        total = round(reduce(lambda ant, sig: ant + sig, subtotales), 2)
         print(f"\nEl total de la compra es de: ${total}")
 
         # Abrimos el archivo para luego escribir todos los insumos que compró
@@ -262,6 +265,8 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
             file.write("FACTURA DE COMPRA\n\n")
             file.write("Cantidad   Producto                           Marca                    Subtotal   \n")
             file.write("---------------------------------------------------------------------------------\n")
+
+            # Ahora escribo las nuevas compras
             for i in range(len(productos_elegidos)):
                 insumo = productos_elegidos[i]
                 cantidad = cantidad_elegidos[i]
@@ -270,31 +275,36 @@ def realizar_compras(lista_insumos: list, lista_marcas: list) -> None:
                 file.write("---------------------------------------------------------------------------------\n")
             file.write(f"El total de la compra es de: ${total}")
 
-def guardar_insumos_alimentos_json(lista_insumos: list, archivo: str) -> None:
-    """guardar_insumos_alimentos_json Se encarga de escribir en un archivo .json todos aquellos insumos filtrados que contengan en su nombre
+def guardar_insumos_alimentos_json(lista_insumos: list) -> None:
+    """guardar_insumos_alimentos_json Se encarga de escribir en un archivo .json solicitado al usuario, todos aquellos insumos filtrados que contengan en su nombre
     la cadena "Alimento"
 
     Args:
         lista_insumos (list): Lista de los insumos dispobles
-        archivo (str): Dirección del archivo donde se van a guardar los insumos filtrados
     """
-        
+
+    archivo = input("\nIngrese el nombre del archivo .JSON donde desea guardar los insumos (sin extension): ")
+
     # Abrimos el archivo .JSON
-    with open(archivo, "w", encoding= 'utf-8') as file:
+    with open(archivo + ".json", "w", encoding= 'utf-8') as file:
         # Filtramos aquellos insumos que tengas en el nombre 'Alimento'
         lista_filtrada = list(filter(lambda insumo: re.findall('Alimento', insumo['NOMBRE']), lista_insumos))
         #Escribimos los insumos en el archivo
         json.dump(lista_filtrada, file, ensure_ascii=False, indent=4)
 
-def leer_insumo_json(archivo: str) -> None:
-    """leer_insumo_json Se encarga de leer el archivo .json en cuestión y muestra sus insumos
-
-    Args:
-        archivo (str): Dirección del archivo donde se van a leer los insumos filtrados
+def leer_insumo_json() -> None:
+    """leer_insumo_json Se encarga de leer el archivo .json solicitado al usuario y muestra sus insumos
     """    
-    with open(archivo, "r", encoding= 'utf-8') as file:
-        lista = json.load(file)
-        mostrar_insumos(lista)
+
+    archivo = input("\nIngrese el nombre del archivo .JSON que desea leer (sin extension): ")
+
+    try:
+        with open(archivo + ".json", "r", encoding= 'utf-8') as file:
+            lista = json.load(file)
+            mostrar_insumos(lista)
+    except FileNotFoundError:
+        print("\nError, el archivo " + archivo + " no existe.")
+
 
 def aplicar_aumento(lista_insumos: list, archivo: str) -> None:
     """aplicar_aumento Se encarga de actualizar los precios de una lista aumentandolos en un 8.4% y escribiendo los nuevos insumos en el archivo .csv
@@ -303,6 +313,7 @@ def aplicar_aumento(lista_insumos: list, archivo: str) -> None:
         lista_insumos (list): Lista de los insumos con datos solicitados a ser actualizados
         archivo (str): Dirección del archivo .csv que contiene los datos de los insumos
     """    
+    
     # Funcion lambda que sirve para quitarle el simbolo '$' y se le agrega el 8.4%, luego volvemos a colocarle el simbolo
     precio_actualizado = lambda insumo: "${:.2f}".format(round(float(re.sub(r'\$', '', insumo['PRECIO'])) * 1.084, 2))
 
@@ -325,13 +336,15 @@ def aplicar_aumento(lista_insumos: list, archivo: str) -> None:
         # Se encarga de limpiar la lista de insumos antigua para luego actualizarla entrando a la opcion 1 del menú de nuevo
         lista_insumos.clear()
 
-def alta_insumo(lista_insumos: list) -> dict:
-    lista_id = []
-    marcas = []
-    seguir = 's'
+def alta_insumo(lista_insumos: list) -> None:
+    """alta_insumo Permite el agregado de un nuevo insumo creado por el usuario con un ID autoincremental
 
-    for insumo in lista_insumos:
-        lista_id.append(insumo['ID'])
+    Args:
+        lista_insumos (list): Lista de insumos a la cual se le va a agregar el nuevo insumo creado
+    """    
+    marcas = []
+    caracteristicas_ingresadas = []
+    seguir = 's'
 
     with open("PPLab_1\marcas.txt", "r", encoding= 'utf-8') as file:
         for linea in file:
@@ -346,20 +359,20 @@ def alta_insumo(lista_insumos: list) -> dict:
     while marca_ingresada == '' or marca_ingresada not in marcas:
         marca_ingresada = str(input("\nReingrese una marca porfavor: ")).title()
 
-    id_ingresado = str(input("\nIngrese el ID del producto que quiere: "))
-    while id_ingresado == '' or id_ingresado in lista_id:
-        id_ingresado = str(input("\nError, ID invalido, reingrese: "))
+    nuevo_id = str(int(lista_insumos[-1]['ID']) + 1)
 
     nombre_ingresado = str(input("\nIngrese el nombre del producto que quiere: "))
     while nombre_ingresado == '' or re.search(r'\d', nombre_ingresado):
         nombre_ingresado = str(input("\nError, nombre invalido, reingrese: "))
 
-    precio_ingresado = input("\nIngrese el precio del producto: ")
-    while not precio_ingresado.isdigit() or int(precio_ingresado) < 0:
-        precio_ingresado = input("\nInvalido, vuelva a ingresar el precio del producto: ")
-    precio_ingresado = int(precio_ingresado)
-
-    caracteristicas_ingresadas = []
+    while True: 
+        try:
+            precio_ingresado = float(input("Ingrese el precio del producto: "))
+        except ValueError:
+            print("Debe ingresar un precio, tiene que ser numerico.")
+            continue
+        else:
+            break
 
     while seguir == 's' and len(caracteristicas_ingresadas) < 3:
         caracteristica_ingresada = str(input("\nIngrese una caracteristica para el producto: "))
@@ -378,61 +391,32 @@ def alta_insumo(lista_insumos: list) -> dict:
     caracteristicas_unidas = "~".join(caracteristicas_ingresadas)
     
     precio_ingresado = "${:.2f}".format(precio_ingresado)
-    nuevo_insumo = {'ID': id_ingresado, 'NOMBRE': nombre_ingresado, 'MARCA': marca_ingresada, 'PRECIO': precio_ingresado, 'CARACTERISTICAS': caracteristicas_unidas}
-    return nuevo_insumo
+    nuevo_insumo = {'ID': nuevo_id, 'NOMBRE': nombre_ingresado, 'MARCA': marca_ingresada, 'PRECIO': precio_ingresado, 'CARACTERISTICAS': caracteristicas_unidas}
 
-def obtener_formato():
-                while True:
-                    print("Selecciona el formato de exportación:")
-                    print("1. CSV")
-                    print("2. JSON")
-                    opcion = input("Ingresa el numero correspondiente: ")
+    lista_insumos.append(nuevo_insumo)
 
-                    if opcion == "1":
-                        return "csv"
-                    elif opcion == "2":
-                        return "json"
-                    else:
-                        print("Opción inválida. Intenta de nuevo.")
+def guardar_segun_exportacion(lista_insumos: list) -> None:
+    """Guarda a eleccion del usuario, en un archivo json o un archivo csv la lista de insumos que le pasamos por parametro, con un nombre elegido por el usuario
 
-def guardar_como_csv(lista_insumos):
-    lineas = []
-    campos = list(lista_insumos[0].keys())
-    lineas.append(','.join(campos))
+    Args:
+        lista_insumos (list): lista de diccionarios 
+    """    
+    while True:
+        formato_exportacion = input("En que tipo de archivo desea guardar los insumos? (csv o json): ")
+        if formato_exportacion == 'json' or formato_exportacion == 'csv':
+            break
 
-    for item in lista_insumos:
-        values = [str(item[key]) for key in campos]
-        lineas.append(','.join(values))
+    nombre_archivo = input("Ingrese el nombre del archivo (sin la extension): ")
+    
+    if formato_exportacion == "json":
+        with open(nombre_archivo + "." + formato_exportacion, "w", encoding= "UTF-8") as file:
+            json.dump(lista_insumos, file, indent= 2)
 
-    contenido_csv = '\n'.join(lineas)
-    return contenido_csv
-
-def guardar_como_json(lista_insumos):
-    return json.dumps(lista_insumos)
-
-def guardar_segun_exportacion(lista_insumos):
-    formato_exportacion = obtener_formato()
-
-    nombre_archivo = str(input("\nIngrese el nombre del archivo donde quiere (sin extensión): "))
-    while nombre_archivo == '' or re.search(r'\d', nombre_archivo):
-        nombre_archivo = str(input("\nError, nombre invalido, reingrese (sin extensión): "))
-
-    # Filtro que no se dupliquen
-    lista_insumos_unicos = list({tuple(d.items()) for d in lista_insumos})
-
-    if formato_exportacion == "csv":
-        nombre_archivo += ".csv"
-        contenido_csv = guardar_como_csv(lista_insumos_unicos)
-
-        with open(nombre_archivo, "w", encoding= 'utf-8') as file:
-            file.write(contenido_csv)
-
-    elif formato_exportacion == "json":
-        nombre_archivo += ".json"
-        contenido_json = guardar_como_json(lista_insumos_unicos)
-        
-        with open(nombre_archivo, "w", encoding= 'utf-8', indent= 4) as file:
-            file.write(contenido_json)
+    else:
+        with open(nombre_archivo + "." + formato_exportacion, "w", encoding= "UTF-8") as file:
+            file.write("ID,NOMBRE,MARCA,PRECIO,CARACTERISTICAS")
+            for insumo in lista_insumos:
+                file.write(f"\n{insumo['ID']},{insumo['NOMBRE']},{insumo['MARCA']},{insumo['PRECIO']},{insumo['CARACTERISTICAS']}")
 
 def mostrar_insumo(insumo: dict):
     """mostrar_insumo Se encarga de mostrar los valores de un insumo especifico
