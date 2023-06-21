@@ -1,7 +1,5 @@
 from functools import reduce
-import re
-import json
-import os
+import random, re, json, os
 
 def mostrar_menu() -> int: 
     """mostrar_menu Muestra el menú del programa
@@ -22,12 +20,14 @@ def mostrar_menu() -> int:
     9.  Actualizar precios
     10. Agregar nuevo producto
     11. Guardar nuevos productos
-    12. Salir """)
+    12. Stock por Marca
+    13. Imprimir Bajo Stock
+    14. Salir """)
 
     while True:
         try:
             opcion = int(input("\nIngrese una opción: "))
-            if opcion > 0 and opcion <= 12:
+            if opcion > 0 and opcion <= 14:
                 return opcion
         except ValueError:
             print("\nIngrese una opcion valida.")
@@ -53,6 +53,7 @@ def cargar_csv(lista: list) -> int:
                 item = {}
                 for i in range(len(campos)):
                     item[campos[i]] = valores[i]
+                item["STOCK"] = random.randint(0, 10) # Acá agrego un nuevo campo al insumo
                 lista.append(item)
         if lista: 
             todoOk = 1
@@ -192,11 +193,11 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
             print(f"{marca}")
 
         # Solicitamos y validamos la marca ingresada
-        marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: ")).title()
+        marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: "))
         while marca_ingresada == '':
             salir = str(input("\nNo hay ingresado ninguna marca, desea salir? s/n: ")).lower()
             if salir == 'n':
-                marca_ingresada = str(input("\nReingrese una marca porfavor: ")).title()
+                marca_ingresada = str(input("\nReingrese una marca porfavor: "))
             else:
                 break
         
@@ -224,13 +225,20 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
             producto_elegido = next(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
             
             # Si se encontró un insumo con esa marca y ID seguimos pidiendo datos, sino avisamos que no existe ese ID para la marca ingresada
-            if producto_elegido:
+            if producto_elegido and producto_elegido['STOCK'] > 0:
 
                 # Pedimos la cantidad del insumo que desea el usuario y validamos que no sea negativo ni que ingrese una cadena vacia
-                cantidad_ingresada = str(input("\nIngrese la cantidad del producto que desea comprar: "))
-                while cantidad_ingresada == '' or int(cantidad_ingresada) < 1:
-                    cantidad_ingresada = str(input("\nError, cantidad invalida, reingrese: "))
+                cantidad_ingresada = input("\nIngrese la cantidad del producto que desea comprar: ")
+                while not cantidad_ingresada.isdigit() or int(cantidad_ingresada) < 1:
+                    print("\nError, cantidad inválida. Ingrese un número entero positivo mayor a cero.")
+                    cantidad_ingresada = input("\nIngrese la cantidad del producto que desea comprar: ")
                 cantidad_ingresada = int(cantidad_ingresada)
+
+                if cantidad_ingresada <= producto_elegido['STOCK']:
+                    producto_elegido['STOCK'] -= cantidad_ingresada
+                else:
+                    print("\nNo hay stock suficiente, intente comprar una cantidad menor.")
+                    continue
 
                 # Agregamos a las listas el producto y la cantidad para luego poder mostrarlos en el .TXT
                 productos_elegidos.append(producto_elegido)
@@ -243,6 +251,8 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
 
                 # Flag para identificar que se realizó la compra
                 hay_compra = True
+            else: 
+                print("\nNo hay stock del insumo elegido.")
 
         else:
             if salir != 's': 
@@ -278,6 +288,8 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
                 file.write(f"{cantidad:^8d}   {insumo['NOMBRE']:34s} {insumo['MARCA']:24s} ${subtotal:.2f}\n")
                 file.write("---------------------------------------------------------------------------------\n")
             file.write(f"El total de la compra es de: ${total}")
+    else:
+        print("\nNo se realizaron compras debido a la falta de stock o un error inesperado.")
 
 def guardar_insumos_alimentos_json(lista_insumos: list) -> None:
     """guardar_insumos_alimentos_json Se encarga de escribir en un archivo .json solicitado al usuario, todos aquellos insumos filtrados que contengan en su nombre
@@ -422,6 +434,46 @@ def guardar_segun_exportacion(lista_insumos: list) -> None:
             file.write("ID,NOMBRE,MARCA,PRECIO,CARACTERISTICAS")
             for insumo in lista_insumos:
                 file.write(f"\n{insumo['ID']},{insumo['NOMBRE']},{insumo['MARCA']},{insumo['PRECIO']},{insumo['CARACTERISTICAS']}")
+
+def stock_por_marca(lista_insumos: list, lista_marcas: list):
+    """stock_por_marca Se encarga de solicitar una marca al usuario y calcula y muestra cuanto stock tiene ese insumo
+
+    Args:
+        lista_insumos (list): Lista de diccionarios 
+        lista_marcas (list): Lista de las marcas disponibles sin repetir
+    """    
+    # Mostramos las marcas disponibles
+    print("\nEstas son las marcas disponibles:\n")
+    for marca in lista_marcas:
+        print(f"{marca}")
+
+    # Solicitamos y validamos la marca ingresada
+    marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: ")).title()
+    while marca_ingresada == '' or marca_ingresada not in lista_marcas:                
+        marca_ingresada = str(input("\nError, ingresó una marca invalida, reingrese una marca porfavor: ")).title()
+
+    # Calculamos el stock de la marca ingresada
+    productos_marca = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada, lista_insumos))
+    stock_total = sum(int(insumo['STOCK']) for insumo in productos_marca)
+    print(f"\nEl stock total de los productos de la marca {marca_ingresada} es: {stock_total}")
+
+def imprimir_bajo_stock(lista_insumos: list):
+    """imprimir_bajo_stock Se encarga de recorrer la lista de insumos y escribir en un archivo CSV un listado con el nombre de producto y 
+    el stock de aquellos productos que tengan 2 o menos unidades de stock.
+
+    Args:
+        lista_insumos (list): Lista de insumos a recorrer
+    """    
+    archivo = input("\nIngrese el nombre del archivo .CSV donde desea guardar los insumos con bajo stock (sin extensión): ")
+    while archivo == '' or os.path.exists(archivo + '.csv'):
+        archivo = input("\nError, el archivo ya existe o ingresó un nombre del archivo .CSV valido (sin extensión): ")
+    insumos_bajo_stock = filter(lambda insumo: int(insumo['STOCK']) <= 2, lista_insumos)
+
+    with open(archivo + ".csv", "w", encoding= 'utf-8') as file:
+        file.write("PRODUCTO,STOCK")
+        for insumo in insumos_bajo_stock:
+            file.write(f"\n{insumo['NOMBRE']},{insumo['STOCK']}")
+    print("\nEl archivo " + archivo + ".csv se ha creado exitosamente con los productos de bajo stock.")
 
 def mostrar_insumo(insumo: dict):
     """mostrar_insumo Se encarga de mostrar los valores de un insumo especifico

@@ -2,9 +2,11 @@ from funciones import *
 import os
 
 datos_insumos = []
+# Estas listas vacias son para guardas compras realizadas anteriormente
 productos_elegidos = []
 cantidad_elegidos = []
 subtotales = []
+# Flags para el ingreso de los puntos
 flag_carga = False
 flag_carga_archivo_json = False
 
@@ -82,7 +84,20 @@ while True:
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 12:
-            # PUNTO 12                                           SALIDA
+            # PUNTO 12                              Mostrar Stock Por Marca Ingresada
+            if flag_carga:
+                marcas_sin_repetir = crear_lista_sin_repetir(datos_insumos, 'MARCA')
+                stock_por_marca(datos_insumos, marcas_sin_repetir)
+            else:
+                print("\nPrimero hay que cargar los datos.")
+        case 13:
+            # PUNTO 13                                    Imprimir Bajo Stock
+            if flag_carga:
+                imprimir_bajo_stock(datos_insumos)
+            else:
+                print("\nPrimero hay que cargar los datos.")
+        case 14:
+            # PUNTO 14                                           SALIDA
             print("\nGracias por usar el programa!")
             break
     os.system("pause")
