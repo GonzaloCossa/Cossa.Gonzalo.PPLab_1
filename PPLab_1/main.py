@@ -2,7 +2,6 @@ from funciones import *
 import os
 
 datos_insumos = []
-lista_marcas = []
 productos_elegidos = []
 cantidad_elegidos = []
 subtotales = []
