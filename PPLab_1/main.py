@@ -50,8 +50,8 @@ while True:
         case 6:
             # PUNTO 6                                      Realizar Compras
             if flag_carga:
-                marcas_sin_repetir = crear_lista_sin_repetir(datos_insumos, 'MARCA')
-                realizar_compras(datos_insumos, marcas_sin_repetir, productos_elegidos, cantidad_elegidos, subtotales)
+                productos_sin_repetir = crear_lista_sin_repetir(datos_insumos, 'NOMBRE')
+                realizar_compras(datos_insumos, productos_sin_repetir, productos_elegidos, cantidad_elegidos, subtotales)
             else:
                 print("\nPrimero hay que cargar los datos.")
         case 7:

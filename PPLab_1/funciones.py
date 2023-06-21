@@ -53,7 +53,9 @@ def cargar_csv(lista: list) -> int:
                 item = {}
                 for i in range(len(campos)):
                     item[campos[i]] = valores[i]
-                item["STOCK"] = random.randint(0, 10) # Acá agrego un nuevo campo al insumo
+                
+                # Creamos un nuevo campo llamado STOCK y le asignamos un numero random entre 0 y 10 incluidos
+                item['STOCK'] = list(map(lambda x: random.randint(0, 10), [0]))[0] # Acá agrego un nuevo campo al insumo
                 lista.append(item)
         if lista: 
             todoOk = 1
@@ -169,13 +171,13 @@ def listar_insumos_ordenados(lista: list, key_uno: str, key_dos: str):
     
     mostrar_insumos(lista_aux)
 
-def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos: list, cantidad_elegidos: list, subtotales: list) -> None:
+def realizar_compras(lista_insumos: list, lista_productos: list, productos_elegidos: list, cantidad_elegidos: list, subtotales: list) -> None:
     """realizar_compras Se encarga de realizar las compras que solicite el usuario, mostrando marcas, solicitando un id y luego validando, 
     guarda la compra en compra.txt 
 
     Args:
         lista_insumos (list): Lista de los insumos disponibles
-        lista_marcas (list): Lista de las marcas disponibles 
+        lista_productos (list): Lista de los productos disponibles 
         productos_elegidos (list): Lista de los productos elegidos en compras previamente realizadas
         cantidad_elegidos (list): Cantidad de los productos elegidos en compras previamente realizadas
         subtotales (list): Lista con los subtotales de los productos elegidos en compras previamente realizadas
@@ -188,33 +190,33 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
 
     while seguir.lower() == 's':
         # Mostramos todas las marcas sin repetir
-        print("\nEstas son las marcas disponibles:\n")
-        for marca in lista_marcas:
-            print(f"{marca}")
+        print("\nEstas son los productos disponibles:\n")
+        for producto in lista_productos:
+            print(f"{producto}")
 
         # Solicitamos y validamos la marca ingresada
-        marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: "))
-        while marca_ingresada == '':
-            salir = str(input("\nNo hay ingresado ninguna marca, desea salir? s/n: ")).lower()
+        nombre_ingresado = str(input("\nPorfavor, ingrese el nombre del producto que desea buscar: "))
+        while nombre_ingresado == '':
+            salir = str(input("\nNo ingresó el nombre del producto, desea salir? s/n: ")).lower()
             if salir == 'n':
-                marca_ingresada = str(input("\nReingrese una marca porfavor: "))
+                nombre_ingresado = str(input("\nReingrese un nombre porfavor: "))
             else:
                 break
         
         # Con la funcion filter y list añadimos a la lista de insumos con la marca ingresada, comparando la marca del insumo con la ingresada
-        lista_marca_ingresada = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada, lista_insumos))
+        lista_nombre_ingresado = list(filter(lambda insumo: insumo['NOMBRE'] == nombre_ingresado, lista_insumos))
 
         # Si se se encontraron insumos con esa marca los mostramos sino, avisamos que no hay insumos con esa marca
-        if lista_marca_ingresada:
-            print(f"\nEstos son los productos disponibles de {marca_ingresada}:")
-            mostrar_insumos(lista_marca_ingresada)
+        if lista_nombre_ingresado:
+            print(f"\nEstos son las marcas disponibles de {nombre_ingresado}:")
+            mostrar_insumos(lista_nombre_ingresado)
 
             # Acá pedimos el ID del producto que desea el usuario y validamos que no esté vacio
             while True:
                 try:
                     id_ingresado = int(input("\nIngrese el ID del producto que quiere: "))
                     if id_ingresado < 0 or id_ingresado > int(lista_insumos[-1]['ID']):
-                        print(f"\nNo existe el ID {id_ingresado} para la marca {marca_ingresada}")
+                        print(f"\nNo existe el ID {id_ingresado} para el producto {nombre_ingresado}")
                     else:
                         id_ingresado = str(id_ingresado)
                         break
@@ -222,7 +224,7 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
                     print("\nError, ingresó un ID invalido.")
 
             # En caso de encontrar coincidencia con los datos ingresados y el producto elegido lo guardamos
-            producto_elegido = next(filter(lambda insumo: insumo['MARCA'] == marca_ingresada and insumo['ID'] == id_ingresado, lista_insumos))
+            producto_elegido = next(filter(lambda insumo: insumo['NOMBRE'] == nombre_ingresado and insumo['ID'] == id_ingresado, lista_insumos))
             
             # Si se encontró un insumo con esa marca y ID seguimos pidiendo datos, sino avisamos que no existe ese ID para la marca ingresada
             if producto_elegido and producto_elegido['STOCK'] > 0:
@@ -237,7 +239,8 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
                 if cantidad_ingresada <= producto_elegido['STOCK']:
                     producto_elegido['STOCK'] -= cantidad_ingresada
                 else:
-                    print("\nNo hay stock suficiente, intente comprar una cantidad menor.")
+                    print("\nNo hay stock suficiente, intente comprar una cantidad menor.\n")
+                    os.system("pause")
                     continue
 
                 # Agregamos a las listas el producto y la cantidad para luego poder mostrarlos en el .TXT
@@ -256,7 +259,7 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
 
         else:
             if salir != 's': 
-                print(f"\nNo hay insumos para la marca {marca_ingresada}")
+                print(f"\nNo hay marcas para el producto {nombre_ingresado}")
 
         # En caso de que el usuario decida salir antes de tiempo por ingresar un dato erroneamente 
         if salir == 's':
@@ -272,7 +275,7 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
 
         # Total de toda la compra
         total = round(reduce(lambda ant, sig: ant + sig, subtotales), 2)
-        print(f"\nEl total de la compra es de: ${total}")
+        print(f"\nEl total de la compra es de: ${total}\n")
 
         # Abrimos el archivo para luego escribir todos los insumos que compró
         with open("compra.txt", "w") as file:
@@ -289,7 +292,7 @@ def realizar_compras(lista_insumos: list, lista_marcas: list, productos_elegidos
                 file.write("---------------------------------------------------------------------------------\n")
             file.write(f"El total de la compra es de: ${total}")
     else:
-        print("\nNo se realizaron compras debido a la falta de stock o un error inesperado.")
+        print("\nNo se realizaron compras debido a la falta de stock o un error inesperado.\n")
 
 def guardar_insumos_alimentos_json(lista_insumos: list) -> None:
     """guardar_insumos_alimentos_json Se encarga de escribir en un archivo .json solicitado al usuario, todos aquellos insumos filtrados que contengan en su nombre
@@ -319,7 +322,7 @@ def leer_insumo_json() -> None:
             lista = json.load(file)
             mostrar_insumos(lista)
     except FileNotFoundError:
-        print("\nError, el archivo " + archivo + " no existe.")
+        print("\nError, el archivo " + archivo + " no existe.\n")
 
 
 def aplicar_aumento(lista_insumos: list, archivo: str) -> None:
@@ -435,7 +438,7 @@ def guardar_segun_exportacion(lista_insumos: list) -> None:
             for insumo in lista_insumos:
                 file.write(f"\n{insumo['ID']},{insumo['NOMBRE']},{insumo['MARCA']},{insumo['PRECIO']},{insumo['CARACTERISTICAS']}")
 
-def stock_por_marca(lista_insumos: list, lista_marcas: list):
+def stock_por_marca(lista_insumos: list, lista_marcas: list) -> None:
     """stock_por_marca Se encarga de solicitar una marca al usuario y calcula y muestra cuanto stock tiene ese insumo
 
     Args:
@@ -448,16 +451,16 @@ def stock_por_marca(lista_insumos: list, lista_marcas: list):
         print(f"{marca}")
 
     # Solicitamos y validamos la marca ingresada
-    marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: ")).title()
+    marca_ingresada = str(input("\nPorfavor, ingrese la marca que desea buscar: "))
     while marca_ingresada == '' or marca_ingresada not in lista_marcas:                
-        marca_ingresada = str(input("\nError, ingresó una marca invalida, reingrese una marca porfavor: ")).title()
+        marca_ingresada = str(input("\nError, ingresó una marca invalida, reingrese una marca porfavor: "))
 
     # Calculamos el stock de la marca ingresada
     productos_marca = list(filter(lambda insumo: insumo['MARCA'] == marca_ingresada, lista_insumos))
     stock_total = sum(int(insumo['STOCK']) for insumo in productos_marca)
     print(f"\nEl stock total de los productos de la marca {marca_ingresada} es: {stock_total}")
 
-def imprimir_bajo_stock(lista_insumos: list):
+def imprimir_bajo_stock(lista_insumos: list) -> None:
     """imprimir_bajo_stock Se encarga de recorrer la lista de insumos y escribir en un archivo CSV un listado con el nombre de producto y 
     el stock de aquellos productos que tengan 2 o menos unidades de stock.
 
@@ -475,7 +478,7 @@ def imprimir_bajo_stock(lista_insumos: list):
             file.write(f"\n{insumo['NOMBRE']},{insumo['STOCK']}")
     print("\nEl archivo " + archivo + ".csv se ha creado exitosamente con los productos de bajo stock.")
 
-def mostrar_insumo(insumo: dict):
+def mostrar_insumo(insumo: dict) -> None:
     """mostrar_insumo Se encarga de mostrar los valores de un insumo especifico
 
     Args:
@@ -483,7 +486,7 @@ def mostrar_insumo(insumo: dict):
     """    
     print(f"| {(insumo['ID']):2s} | {insumo['NOMBRE']:34s} | {insumo['MARCA']:24s}| {insumo['PRECIO']:8s} |  {insumo['CARACTERISTICAS']:88s}|")
 
-def mostrar_insumos(lista: list):
+def mostrar_insumos(lista: list) -> None:
     """mostrar_insumos Se encarga de mostrar los valores de una lista de insumos especificos
 
     Args:
